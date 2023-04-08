@@ -13,6 +13,11 @@ def percentage_nulls_column(df, column):
 
 def calculate_nulls(df, column_list, verbosity):
 
+    len_df = len(df)
+    len_df_drop_all = len(df.dropna(how = 'all', axis = 0))
+    if(len_df > len_df_drop_all):
+        print(f"Dropped {len_df - len_df_drop_all} rows where all the values are nulls")
+
     no_nulls = []
     for i in column_list:
         count_nulls = count_nulls_column(df, i)
@@ -78,6 +83,14 @@ def get_uncorelated_columns_for_modelling(df, column_name):
     corr_matrix = df.corr(method = 'kendall')
     columns_all_df = corr_matrix[column_name].reset_index()
     columns_all_df = columns_all_df[abs(columns_all_df[column_name]) < 0.1]
+    
+    return list(columns_all_df['index'].values)
+
+def get_corelated_columns_for_modelling(df, column_name):
+    
+    corr_matrix = df.corr(method = 'kendall')
+    columns_all_df = corr_matrix[column_name].reset_index()
+    columns_all_df = columns_all_df[abs(columns_all_df[column_name]) > 0.1]
     
     return list(columns_all_df['index'].values)
 
